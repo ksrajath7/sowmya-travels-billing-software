@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sowmya Travels Billing Software</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Input Form Section -->
+        <aside class="input-panel">
+            <header class="panel-header">
+                <h1>Billing Input</h1>
+                <p>Fill details to update the bill preview</p>
+            </header>
+            
+            <form id="billing-form">
+                <div class="form-grid">
+                    <!-- Bill Information -->
+                    <section class="form-section">
+                        <h3>Bill Details</h3>
+                        <div class="input-group">
+                            <label for="billNo">Bill No.</label>
+                            <input type="text" id="billNo" placeholder="e.g. 2031">
+                        </div>
+                        <div class="input-group">
+                            <label for="billDate">Bill Date</label>
+                            <input type="date" id="billDate">
+                        </div>
+                        <div class="input-group">
+                            <label for="orderNo">Order No.</label>
+                            <input type="text" id="orderNo" placeholder="e.g. 1831">
+                        </div>
+                        <div class="input-group">
+                            <label for="contactNo">Contact No</label>
+                            <input type="text" id="contactNo" placeholder="e.g. 8908605162">
+                        </div>
+                    </section>
+
+                    <!-- Customer Information -->
+                    <section class="form-section">
+                        <h3>To (Customer)</h3>
+                        <div class="input-group">
+                            <label for="customerName">Name & Address</label>
+                            <textarea id="customerName" rows="4" placeholder="Enter customer address..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="customerGST">Customer GSTIN</label>
+                            <input type="text" id="customerGST" placeholder="32AAACL1069K1Z0">
+                        </div>
+                    </section>
+
+                    <!-- Trip Details -->
+                    <section class="form-section full-width">
+                        <h3>Trip Details</h3>
+                        <div class="trip-grid">
+                            <div class="input-group">
+                                <label for="tripCode">Trip Code</label>
+                                <input type="text" id="tripCode" placeholder="Sow 37">
+                            </div>
+                            <div class="input-group">
+                                <label for="tripVoucherNo">Trip Voucher No.</label>
+                                <input type="text" id="tripVoucherNo" placeholder="13998">
+                            </div>
+                            <div class="input-group">
+                                <label for="tripStartDate">Trip starting date</label>
+                                <input type="date" id="tripStartDate">
+                            </div>
+                            <div class="input-group">
+                                <label for="vehicleType">Vehicle</label>
+                                <input type="text" id="vehicleType" placeholder="sedan">
+                            </div>
+                            <div class="input-group">
+                                <label for="tripEndDate">Trip Closing Date</label>
+                                <input type="date" id="tripEndDate">
+                            </div>
+                            <div class="input-group">
+                                <label for="vehicleNo">Vehicle No.</label>
+                                <input type="text" id="vehicleNo" placeholder="KL-08-BQ-3828">
+                            </div>
+                            <div class="input-group">
+                                <label for="source">Source</label>
+                                <input type="text" id="source" placeholder="Cochin">
+                            </div>
+                            <div class="input-group">
+                                <label for="totalKms">Total KMs</label>
+                                <input type="text" id="totalKms" placeholder="130km">
+                            </div>
+                            <div class="input-group">
+                                <label for="destination">Destination</label>
+                                <input type="text" id="destination" placeholder="Local">
+                            </div>
+                            <div class="input-group">
+                                <label for="guestName">Guest name</label>
+                                <input type="text" id="guestName" placeholder="Mr. K Krishna Das">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="routeDetails">Route Details</label>
+                            <input type="text" id="routeDetails" placeholder="From Athani to cochin airport Thrissur">
+                        </div>
+                    </section>
+
+                    <!-- Financials -->
+                    <section class="form-section full-width">
+                        <h3>Charges</h3>
+                        <div class="financial-grid">
+                            <div class="input-group">
+                                <label for="tripFare">Trip Fare</label>
+                                <input type="number" id="tripFare" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="driverBatta">Driver Batta</label>
+                                <input type="number" id="driverBatta" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="toll">Toll</label>
+                                <input type="number" id="toll" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="parking">Parking</label>
+                                <input type="number" id="parking" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="permit">Permit</label>
+                                <input type="number" id="permit" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="cgst">CGST Amount</label>
+                                <input type="number" id="cgst" value="0">
+                            </div>
+                            <div class="input-group">
+                                <label for="sgst">SGST Amount</label>
+                                <input type="number" id="sgst" value="0">
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                
+                <div class="actions">
+                    <button type="button" id="download-btn" class="btn-primary">Download PDF</button>
+                    <button type="reset" class="btn-secondary">Reset</button>
+                </div>
+                <p class="software-version" style="color: var(--text-dim); font-size: 10px; margin-top: 10px; opacity: 0.5;">Software Version 21.0 (Mobile Cloning Applied)</p>
+            </form>
+        </aside>
+
+        <!-- Preview Section -->
+        <main class="preview-panel">
+            <div id="bill-preview" class="bill-page">
+                <header class="bill-header">
+                    <h1 class="company-name">SOWMYA TRAVELS</h1>
+                    <p class="company-tagline">OPERATORS OF TOURIST VEHICLES & A/C, NON A/C LUXURY CARS.</p>
+                    <p class="company-address">Kizhakkumpattukara road. Opp bhishop house Thrissur Kerala 680005</p>
+                    <p class="company-contact">Email: sowmyatravelsthrissur@gmail.com</p>
+                    <p class="company-contact">Ph: 7025454500 , 9387992889, 0487 2330642(R)</p>
+                    <p class="company-gst">GSTIN: 32AFIPT2651K1Z9</p>
+                    <h2 class="bill-type">CASH / CREDIT BILL</h2>
+                </header>
+
+                <div class="bill-top-info">
+                    <div class="customer-info">
+                        <div class="to-label">To.</div>
+                        <div class="customer-details">
+                            <pre id="preview-customerName"></pre>
+                            <p><strong>GST IN: </strong><span id="preview-customerGST"></span></p>
+                        </div>
+                    </div>
+                    <div class="bill-meta">
+                        <div class="meta-row"><span>Bill No.</span> <span id="preview-billNo"></span></div>
+                        <div class="meta-row"><span>Bill Date.</span> <span id="preview-billDate"></span></div>
+                        <div class="meta-row"><span>Order No.</span> <span id="preview-orderNo"></span></div>
+                        <div class="meta-row"><span>Contact No</span> <span id="preview-contactNo"></span></div>
+                    </div>
+                </div>
+
+                <div class="trip-info-grid">
+                    <div class="info-item"><span>Trip Code.</span> <span id="preview-tripCode"></span></div>
+                    <div class="info-item"><span>Trip voucher No.</span> <span id="preview-tripVoucherNo"></span></div>
+                    <div class="info-item"><span>Trip starting date.</span> <span id="preview-tripStartDate"></span></div>
+                    <div class="info-item"><span>Vehicle</span> <span id="preview-vehicleType"></span></div>
+                    <div class="info-item"><span>Trip Closing Date.</span> <span id="preview-tripEndDate"></span></div>
+                    <div class="info-item"><span>Vehicle No.</span> <span id="preview-vehicleNo"></span></div>
+                    <div class="info-item"><span>Source.</span> <span id="preview-source"></span></div>
+                    <div class="info-item"><span>Total KMs</span> <span id="preview-totalKms"></span></div>
+                    <div class="info-item"><span>Destination.</span> <span id="preview-destination"></span></div>
+                </div>
+
+                <div class="bill-row">
+                    <span>Guestname.</span> <span id="preview-guestName"></span>
+                </div>
+                <div class="bill-row">
+                    <span>RouteDetails.</span> <span id="preview-routeDetails"></span>
+                </div>
+
+                <div class="financial-section">
+                    <div class="fin-row"><span>Trip Fare.</span> <span id="preview-tripFare">0</span></div>
+                    <div class="fin-row"><span>Driver Batta.</span> <span id="preview-driverBatta">0</span></div>
+                    <div class="fin-row"><span>Toll.</span> <span id="preview-toll">0</span></div>
+                    <div class="fin-row"><span>Parking.</span> <span id="preview-parking">0</span></div>
+                    <div class="fin-row"><span>Permit.</span> <span id="preview-permit">0</span></div>
+                    <div class="fin-row total-row"><span>Total</span> <span id="preview-total">0</span></div>
+                    <div class="fin-row"><span>CGST (2.50%)</span> <span id="preview-cgst">0</span></div>
+                    <div class="fin-row"><span>SGST (2.50%)</span> <span id="preview-sgst">0</span></div>
+                    <div class="fin-row grand-total"><span>Grand Total</span> <span id="preview-grandTotal">0</span></div>
+                    <div class="fin-row amount-payable"><span>Amount Payable</span> <span id="preview-amountPayable">0</span></div>
+                </div>
+
+                <div class="amount-in-words">
+                    <span id="preview-amountWords"></span>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js?v=21"></script>
+</body>
+</html>
