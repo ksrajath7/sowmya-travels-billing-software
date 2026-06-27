@@ -196,9 +196,9 @@ input:focus, textarea:focus {
     flex: 1;
     background: var(--preview-bg);
     display: flex;
-    justify-content: center;
     padding: 3rem;
     overflow-y: auto;
+    overflow-x: auto;
     align-items: flex-start;
     height: 100%;
 }
@@ -208,7 +208,7 @@ input:focus, textarea:focus {
         padding: 1rem;
         flex: none;
         height: auto;
-        overflow-x: hidden;
+        overflow-x: auto;
         width: 100%;
         max-width: 100%;
     }
@@ -225,15 +225,8 @@ input:focus, textarea:focus {
     flex-direction: column;
     font-family: 'Times New Roman', Times, serif;
     transform-origin: top center;
-}
-
-@media (max-width: 900px) {
-    .bill-page {
-        width: 100%;
-        min-height: auto;
-        padding: 10mm;
-        box-shadow: none;
-    }
+    margin: 0 auto;
+    flex-shrink: 0;
 }
 
 .bill-header {

@@ -159,6 +159,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 unit: 'mm',
                 format: 'a4'
             });
+
+            // Extract current form values to embed as metadata
+            const formData = {};
+            inputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    formData[id] = input.value;
+                }
+            });
+
+            pdf.setProperties({
+                title: 'Sowmya Travels Bill',
+                subject: JSON.stringify(formData),
+                author: 'Sowmya Travels Billing Software',
+                creator: 'Sowmya Travels'
+            });
             
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -180,4 +196,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     downloadBtn.addEventListener('click', generatePDF);
+
+    // PDF.js worker setup
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const uploadBtn = document.getElementById('upload-btn');
+    const pdfUpload = document.getElementById('pdf-upload');
+
+    if (uploadBtn && pdfUpload) {
+        uploadBtn.addEventListener('click', () => {
+            pdfUpload.click();
+        });
+
+        pdfUpload.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const originalBtnText = uploadBtn.innerText;
+            uploadBtn.innerText = 'Reading...';
+            uploadBtn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = async function () {
+                const typedarray = new Uint8Array(this.result);
+                try {
+                    const loadingTask = pdfjsLib.getDocument({ data: typedarray });
+                    const pdfDoc = await loadingTask.promise;
+                    const { info } = await pdfDoc.getMetadata();
+                    console.log('PDF Info metadata:', info);
+                    
+                    if (info && info.Subject) {
+                        try {
+                            const data = JSON.parse(info.Subject);
+                            
+                            // Fill form inputs and update preview
+                            inputs.forEach(id => {
+                                const input = document.getElementById(id);
+                                if (input && data[id] !== undefined) {
+                                    input.value = data[id];
+                                    updatePreview(id, data[id]);
+                                }
+                            });
+                            
+                            // Recalculate totals
+                            calculateTotals();
+                            alert('Data successfully loaded from PDF!');
+                        } catch (parseErr) {
+                            console.error('JSON Parse Error of Subject metadata:', parseErr);
+                            alert('Unable to extract billing data. The uploaded PDF might be an older format or modified.');
+                        }
+                    } else {
+                        alert('No billing metadata found in the uploaded PDF. Please make sure to upload a PDF downloaded using the updated version of this software.');
+                    }
+                } catch (pdfErr) {
+                    console.error('PDF parsing error:', pdfErr);
+                    alert('Error reading PDF. Please ensure this is a valid PDF file.');
+                } finally {
+                    uploadBtn.innerText = originalBtnText;
+                    uploadBtn.disabled = false;
+                    pdfUpload.value = ''; // Reset file input
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    }
 });
