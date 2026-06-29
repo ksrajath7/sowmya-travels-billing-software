@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // List of input IDs to sync with preview
     const inputs = [
-        'billNo', 'billDate', 'orderNo', 'contactNo', 
-        'customerName', 'customerGST', 'tripCode', 
-        'tripVoucherNo', 'tripStartDate', 'vehicleType', 
-        'tripEndDate', 'vehicleNo', 'source', 'totalKms', 
+        'billNo', 'billDate', 'orderNo', 'contactNo',
+        'customerName', 'customerGST', 'tripCode',
+        'tripVoucherNo', 'tripStartDate', 'vehicleType',
+        'tripEndDate', 'vehicleNo', 'source', 'totalKms',
         'destination', 'guestName', 'routeDetails',
         'tripFare', 'driverBatta', 'toll', 'parking', 'permit',
         'cgst', 'sgst'
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('preview-sgst').innerText = sgst.toFixed(2);
         document.getElementById('preview-grandTotal').innerText = Math.round(grandTotal).toFixed(2);
         document.getElementById('preview-amountPayable').innerText = Math.round(grandTotal).toFixed(2);
-        
+
         const amountWords = numberToWords(Math.round(grandTotal));
         document.getElementById('preview-amountWords').innerText = amountWords ? `${amountWords} only` : '';
     }
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const element = document.getElementById('bill-preview');
         const billNoInput = document.getElementById('billNo').value.trim();
         const fileName = billNoInput ? `bill-${billNoInput}.pdf` : 'bill.pdf';
-        
+
         const originalText = downloadBtn.innerText;
         downloadBtn.innerText = 'Processing...';
         downloadBtn.disabled = true;
@@ -163,10 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const pdfWidth = pdf.internal.pageSize.getWidth();
             const pdfHeight = pdf.internal.pageSize.getHeight();
-            
+
             // Fit image perfectly to A4 dimensions
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-            
+
             const blob = pdf.output('blob');
             window.saveAs(blob, fileName);
 
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const billNo = formData['billNo'] ? formData['billNo'].trim() : 'N/A';
         const customerName = formData['customerName'] || '';
         const guestName = formData['guestName'] || '';
-        
+
         // Calculate current grand total
         const tripFare = parseFloat(formData['tripFare']) || 0;
         const driverBatta = parseFloat(formData['driverBatta']) || 0;
@@ -288,16 +288,27 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('bill_history', JSON.stringify(history));
         }
 
+        // Update history badge count
+        const badge = document.getElementById('history-badge');
+        if (badge) {
+            badge.innerText = history.length;
+            if (history.length === 0) {
+                badge.classList.add('empty');
+            } else {
+                badge.classList.remove('empty');
+            }
+        }
+
         if (history.length === 0) {
-            historyList.innerHTML = `<div class="history-empty-state">No download history yet. Your downloaded bills will appear here.</div>`;
+            historyList.innerHTML = `<div class="history-empty-state">No bill history yet. Your bills will appear here.</div>`;
             return;
         }
 
         historyList.innerHTML = '';
         history.forEach(item => {
             const date = new Date(item.timestamp);
-            const timeString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
+            const timeString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             // Build customer label
             let displayName = item.customerName.split('\n')[0].trim();
             if (!displayName && item.guestName) {

@@ -438,9 +438,9 @@ input:focus, textarea:focus {
 .history-toggle-btn {
     position: absolute;
     top: 2rem;
-    left: -42px; /* Sticky tab button */
-    width: 42px;
-    height: 42px;
+    left: -52px; /* Sticky tab button */
+    width: 52px;
+    height: 52px;
     background: #1e293b;
     border: 1px solid var(--border);
     border-right: none;
@@ -450,15 +450,49 @@ input:focus, textarea:focus {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
     box-shadow: -4px 4px 10px rgba(0, 0, 0, 0.15);
     transition: background 0.2s, color 0.2s;
     z-index: 100;
 }
 
+.history-toggle-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.history-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #ef4444; /* Vibrant red */
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #1e293b; /* Matches button background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+}
+
+.history-badge.empty {
+    transform: scale(0);
+    opacity: 0;
+}
+
 .history-toggle-btn:hover {
     background: #334155;
     color: var(--primary);
+}
+
+#clear-history-btn {
+    flex: none;
 }
 
 .history-list {
