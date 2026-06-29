@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sowmya Travels Billing Software</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-</head>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sowmya Travels Billing Software</title>
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    </head>
+
 <body>
     <div class="app-container">
         <!-- Input Form Section -->
@@ -26,7 +31,7 @@
                 <h1>Billing Input</h1>
                 <p>Fill details to update the bill preview</p>
             </header>
-            
+
             <form id="billing-form">
                 <div class="form-grid">
                     <!-- Bill Information -->
@@ -76,7 +81,7 @@
                                 <input type="text" id="tripVoucherNo" placeholder="13998">
                             </div>
                             <div class="input-group">
-                                <label for="tripStartDate">Trip starting date</label>
+                                <label for="tripStartDate">Trip Starting date</label>
                                 <input type="date" id="tripStartDate">
                             </div>
                             <div class="input-group">
@@ -149,12 +154,14 @@
                         </div>
                     </section>
                 </div>
-                
+
                 <div class="actions">
                     <button type="button" id="download-btn" class="btn-primary">Download PDF</button>
                     <button type="reset" class="btn-secondary">Reset</button>
                 </div>
-                <p class="software-version" style="color: var(--text-dim); font-size: 10px; margin-top: 10px; opacity: 0.5;">Software Version 21.0 (Mobile Cloning Applied)</p>
+                <p class="software-version"
+                    style="color: var(--text-dim); font-size: 10px; margin-top: 10px; opacity: 0.5;">Software Version
+                    21.0 (Mobile Cloning Applied)</p>
             </form>
         </aside>
 
@@ -190,7 +197,8 @@
                 <div class="trip-info-grid">
                     <div class="info-item"><span>Trip Code.</span> <span id="preview-tripCode"></span></div>
                     <div class="info-item"><span>Trip voucher No.</span> <span id="preview-tripVoucherNo"></span></div>
-                    <div class="info-item"><span>Trip starting date.</span> <span id="preview-tripStartDate"></span></div>
+                    <div class="info-item"><span>Trip Starting date.</span> <span id="preview-tripStartDate"></span>
+                    </div>
                     <div class="info-item"><span>Vehicle</span> <span id="preview-vehicleType"></span></div>
                     <div class="info-item"><span>Trip Closing Date.</span> <span id="preview-tripEndDate"></span></div>
                     <div class="info-item"><span>Vehicle No.</span> <span id="preview-vehicleNo"></span></div>
@@ -215,8 +223,10 @@
                     <div class="fin-row total-row"><span>Total</span> <span id="preview-total">0</span></div>
                     <div class="fin-row"><span>CGST (2.50%)</span> <span id="preview-cgst">0</span></div>
                     <div class="fin-row"><span>SGST (2.50%)</span> <span id="preview-sgst">0</span></div>
-                    <div class="fin-row grand-total"><span>Grand Total</span> <span id="preview-grandTotal">0</span></div>
-                    <div class="fin-row amount-payable"><span>Amount Payable</span> <span id="preview-amountPayable">0</span></div>
+                    <div class="fin-row grand-total"><span>Grand Total</span> <span id="preview-grandTotal">0</span>
+                    </div>
+                    <div class="fin-row amount-payable"><span>Amount Payable</span> <span
+                            id="preview-amountPayable">0</span></div>
                 </div>
 
                 <div class="amount-in-words">
@@ -224,7 +234,25 @@
                 </div>
             </div>
         </main>
+
+        <!-- Collapsible History Sidebar -->
+        <aside class="history-panel collapsed" id="history-panel">
+            <button type="button" id="history-toggle-btn" class="history-toggle-btn" aria-label="Toggle History">
+                <span>📜</span>
+            </button>
+            <div class="history-panel-content">
+                <header class="panel-header">
+                    <h2>History</h2>
+                    <p>Recent downloads (5-day cache)</p>
+                </header>
+                <div id="history-list" class="history-list">
+                    <!-- History items will be dynamically generated here -->
+                </div>
+                <button type="button" id="clear-history-btn" class="btn-secondary" style="margin-top: auto; width: 100%;">Clear History</button>
+            </div>
+        </aside>
     </div>
     <script src="script.js?v=21"></script>
 </body>
+
 </html>

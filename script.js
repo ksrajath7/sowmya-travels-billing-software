@@ -170,6 +170,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const blob = pdf.output('blob');
             window.saveAs(blob, fileName);
 
+            // Add downloaded bill to history
+            saveBillToHistory();
+
             downloadBtn.innerText = originalText;
             downloadBtn.disabled = false;
         } catch (err) {
@@ -182,5 +185,220 @@ document.addEventListener('DOMContentLoaded', () => {
 
     downloadBtn.addEventListener('click', generatePDF);
 
+    // --- History Management Functions ---
 
+    // Clean up history entries older than 5 days (5 * 24 * 60 * 60 * 1000 milliseconds)
+    function cleanOldHistory(history) {
+        const fiveDaysAgo = Date.now() - (5 * 24 * 60 * 60 * 1000);
+        return history.filter(item => item.timestamp >= fiveDaysAgo);
+    }
+
+    function saveBillToHistory() {
+        const formData = {};
+        inputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                formData[id] = input.value;
+            }
+        });
+
+        const billNo = formData['billNo'] ? formData['billNo'].trim() : 'N/A';
+        const customerName = formData['customerName'] || '';
+        const guestName = formData['guestName'] || '';
+        
+        // Calculate current grand total
+        const tripFare = parseFloat(formData['tripFare']) || 0;
+        const driverBatta = parseFloat(formData['driverBatta']) || 0;
+        const toll = parseFloat(formData['toll']) || 0;
+        const parking = parseFloat(formData['parking']) || 0;
+        const permit = parseFloat(formData['permit']) || 0;
+        const total = tripFare + driverBatta + toll + parking + permit;
+        const cgst = parseFloat(formData['cgst']) || 0;
+        const sgst = parseFloat(formData['sgst']) || 0;
+        const grandTotal = Math.round(total + cgst + sgst).toFixed(2);
+
+        const historyItem = {
+            timestamp: Date.now(),
+            billNo,
+            customerName,
+            guestName,
+            grandTotal,
+            formData
+        };
+
+        let history = [];
+        try {
+            const stored = localStorage.getItem('bill_history');
+            if (stored) {
+                history = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Error reading bill history from localStorage', e);
+        }
+
+        // Apply 5-day expiration filter
+        history = cleanOldHistory(history);
+
+        // Check if bill with this billNo already exists
+        const existingIndex = history.findIndex(item => item.billNo === billNo);
+        if (existingIndex !== -1) {
+            // Replace the old one with the edited/updated one
+            history[existingIndex] = historyItem;
+            // Move it to the top of the history list
+            const [item] = history.splice(existingIndex, 1);
+            history.unshift(item);
+        } else {
+            // Add as a new entry to the top
+            history.unshift(historyItem);
+        }
+
+        // Limit history to 50 items
+        if (history.length > 50) {
+            history = history.slice(0, 50);
+        }
+
+        localStorage.setItem('bill_history', JSON.stringify(history));
+        renderHistory();
+
+        // Auto-expand sidebar to show the downloaded bill in history
+        const historyPanel = document.getElementById('history-panel');
+        if (historyPanel) {
+            historyPanel.classList.remove('collapsed');
+        }
+    }
+
+    function renderHistory() {
+        const historyList = document.getElementById('history-list');
+        if (!historyList) return;
+
+        let history = [];
+        try {
+            const stored = localStorage.getItem('bill_history');
+            if (stored) {
+                history = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Error parsing bill history', e);
+        }
+
+        // Apply 5-day expiration filter
+        const originalLength = history.length;
+        history = cleanOldHistory(history);
+        if (history.length !== originalLength) {
+            localStorage.setItem('bill_history', JSON.stringify(history));
+        }
+
+        if (history.length === 0) {
+            historyList.innerHTML = `<div class="history-empty-state">No download history yet. Your downloaded bills will appear here.</div>`;
+            return;
+        }
+
+        historyList.innerHTML = '';
+        history.forEach(item => {
+            const date = new Date(item.timestamp);
+            const timeString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Build customer label
+            let displayName = item.customerName.split('\n')[0].trim();
+            if (!displayName && item.guestName) {
+                displayName = item.guestName.trim();
+            }
+            if (!displayName) {
+                displayName = 'Unnamed Customer';
+            }
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'history-item';
+            itemDiv.innerHTML = `
+                <div class="history-item-header">
+                    <span class="history-item-title">Bill #${item.billNo}</span>
+                    <span class="history-item-amount">₹${item.grandTotal}</span>
+                </div>
+                <div class="history-item-subtitle" title="${displayName}">${displayName}</div>
+                <div class="history-item-footer">
+                    <span class="history-item-date">${timeString}</span>
+                    <div class="history-item-actions">
+                        <button type="button" class="history-item-btn btn-load" data-billno="${item.billNo}">Load</button>
+                        <button type="button" class="history-item-btn btn-delete" data-billno="${item.billNo}">Delete</button>
+                    </div>
+                </div>
+            `;
+
+            // Event listeners
+            itemDiv.querySelector('.btn-load').addEventListener('click', () => {
+                loadBill(item.billNo);
+            });
+            itemDiv.querySelector('.btn-delete').addEventListener('click', () => {
+                deleteBill(item.billNo);
+            });
+
+            historyList.appendChild(itemDiv);
+        });
+    }
+
+    function loadBill(billNo) {
+        let history = [];
+        try {
+            const stored = localStorage.getItem('bill_history');
+            if (stored) {
+                history = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Error loading bill', e);
+        }
+
+        const item = history.find(h => h.billNo === billNo);
+        if (!item) return;
+
+        // Restore form input values
+        inputs.forEach(fieldId => {
+            const input = document.getElementById(fieldId);
+            if (input) {
+                input.value = item.formData[fieldId] !== undefined ? item.formData[fieldId] : '';
+                updatePreview(fieldId, input.value);
+            }
+        });
+
+        // Recalculate totals
+        calculateTotals();
+    }
+
+    function deleteBill(billNo) {
+        let history = [];
+        try {
+            const stored = localStorage.getItem('bill_history');
+            if (stored) {
+                history = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.error('Error deleting bill', e);
+        }
+
+        history = history.filter(h => h.billNo !== billNo);
+        localStorage.setItem('bill_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    // Clear history handler
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear your download history?')) {
+                localStorage.removeItem('bill_history');
+                renderHistory();
+            }
+        });
+    }
+
+    // Sidebar toggle handler
+    const historyPanel = document.getElementById('history-panel');
+    const historyToggleBtn = document.getElementById('history-toggle-btn');
+    if (historyToggleBtn && historyPanel) {
+        historyToggleBtn.addEventListener('click', () => {
+            historyPanel.classList.toggle('collapsed');
+        });
+    }
+
+    // Initial render
+    renderHistory();
 });
