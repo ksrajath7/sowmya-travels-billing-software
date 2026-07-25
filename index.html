@@ -59,6 +59,16 @@
                     <section class="form-section">
                         <h3>To (Customer)</h3>
                         <div class="input-group">
+                            <label for="clientSelect">Select Preset Client</label>
+                            <select id="clientSelect" class="preset-select">
+                                <option value="" selected>-- Select Client --</option>
+                                <option value="sun_pharma">Sun Pharmaceutical Industries Ltd.</option>
+                                <option value="lupin">Lupin Limited</option>
+                                <option value="aristo">Aristo Pharmaceuticals Pvt LTD</option>
+                                <option value="clear">-- Clear Selection --</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
                             <label for="customerName">Name & Address</label>
                             <textarea id="customerName" rows="4" placeholder="Enter customer address..."></textarea>
                         </div>
@@ -85,8 +95,15 @@
                                 <input type="date" id="tripStartDate">
                             </div>
                             <div class="input-group">
-                                <label for="vehicleType">Vehicle</label>
-                                <input type="text" id="vehicleType" placeholder="sedan">
+                                <label for="vehicleSelect">Vehicle</label>
+                                <select id="vehicleSelect" class="preset-select">
+                                    <option value="" selected>-- Select Car --</option>
+                                    <option value="Creta">Creta</option>
+                                    <option value="Sedan">Sedan</option>
+                                    <option value="Innova">Innova</option>
+                                    <option value="clear">-- Clear Selection --</option>
+                                </select>
+                                <input type="text" id="vehicleType" placeholder="e.g. sedan">
                             </div>
                             <div class="input-group">
                                 <label for="tripEndDate">Trip Closing Date</label>
@@ -247,7 +264,7 @@
             <div class="history-panel-content">
                 <header class="panel-header">
                     <h2>History</h2>
-                    <p>Recent bills (5-day cache)</p>
+                    <p>Recent bills (1-year cache)</p>
                 </header>
                 <div id="history-list" class="history-list">
                     <!-- History items will be dynamically generated here -->
@@ -257,7 +274,7 @@
             </div>
         </aside>
     </div>
-    <script src="script.js?v=21"></script>
+    <script src="script.js?v=25"></script>
 </body>
 
 </html>

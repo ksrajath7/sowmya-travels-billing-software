@@ -25,6 +25,96 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Preset car dropdown sync & auto-fill logic
+    const vehicleSelect = document.getElementById('vehicleSelect');
+    const vehicleTypeInput = document.getElementById('vehicleType');
+
+    function syncVehicleSelect() {
+        if (vehicleSelect && vehicleTypeInput) {
+            const val = vehicleTypeInput.value.trim().toLowerCase();
+            const matchingOption = Array.from(vehicleSelect.options).find(opt => opt.value.toLowerCase() === val);
+            if (matchingOption) {
+                vehicleSelect.value = matchingOption.value;
+            } else {
+                vehicleSelect.value = '';
+            }
+        }
+    }
+
+    if (vehicleSelect && vehicleTypeInput) {
+        vehicleSelect.addEventListener('change', () => {
+            if (vehicleSelect.value) {
+                vehicleTypeInput.value = vehicleSelect.value;
+                updatePreview('vehicleType', vehicleSelect.value);
+            }
+        });
+    }
+
+    // Preset client dropdown sync & auto-fill logic
+    const clientSelect = document.getElementById('clientSelect');
+    const customerNameInput = document.getElementById('customerName');
+    const customerGSTInput = document.getElementById('customerGST');
+
+    const clientPresets = {
+        'sun_pharma': {
+            nameAddress: `Sun Pharmaceutical Industries Ltd.
+11/467, C.MADAVANA, NEAR
+LAKESHORE HOSPITAL,
+PANANGAD – 682506
+COCHIN`,
+            gst: '32AADCS3124K1ZM'
+        },
+        'lupin': {
+            nameAddress: `Lupin Limited
+9/520,
+LeoLogistic Park,
+N.H. Bypass Junction,
+Kuttanellur P.O,
+Thrissur 680014 Kerala.`,
+            gst: '32AAACL1069K1Z0'
+        },
+        'aristo': {
+            nameAddress: `Aristo Pharmaceuticals Pvt LTD
+II/202 G & H,PBK MINA ROAD
+VAZHAKALA
+THRIKKARKARA P.O.,COCHIN-682021
+PH:04842422615/675.`,
+            gst: '32AAACA4495N1ZH'
+        }
+    };
+
+    function syncClientSelect() {
+        if (clientSelect && customerNameInput) {
+            const val = customerNameInput.value.trim().toLowerCase();
+            if (val.includes('sun pharmaceutical')) {
+                clientSelect.value = 'sun_pharma';
+            } else if (val.includes('lupin')) {
+                clientSelect.value = 'lupin';
+            } else if (val.includes('aristo')) {
+                clientSelect.value = 'aristo';
+            } else {
+                clientSelect.value = '';
+            }
+        }
+    }
+
+    if (clientSelect && customerNameInput && customerGSTInput) {
+        clientSelect.addEventListener('change', () => {
+            const key = clientSelect.value;
+            if (key && clientPresets[key]) {
+                const preset = clientPresets[key];
+                customerNameInput.value = preset.nameAddress;
+                customerGSTInput.value = preset.gst;
+                updatePreview('customerName', preset.nameAddress);
+                updatePreview('customerGST', preset.gst);
+            }
+        });
+
+        customerNameInput.addEventListener('input', () => {
+            syncClientSelect();
+        });
+    }
+
     function updatePreview(id, value) {
         const previewElement = document.getElementById(`preview-${id}`);
         if (previewElement) {
@@ -187,10 +277,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- History Management Functions ---
 
-    // Clean up history entries older than 5 days (5 * 24 * 60 * 60 * 1000 milliseconds)
+    // Clean up history entries older than 1 year (365 * 24 * 60 * 60 * 1000 milliseconds)
     function cleanOldHistory(history) {
-        const fiveDaysAgo = Date.now() - (5 * 24 * 60 * 60 * 1000);
-        return history.filter(item => item.timestamp >= fiveDaysAgo);
+        const oneYearAgo = Date.now() - (365 * 24 * 60 * 60 * 1000);
+        return history.filter(item => item.timestamp >= oneYearAgo);
     }
 
     function saveBillToHistory() {
@@ -236,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error reading bill history from localStorage', e);
         }
 
-        // Apply 5-day expiration filter
+        // Apply 1-year expiration filter
         history = cleanOldHistory(history);
 
         // Check if bill with this billNo already exists
@@ -252,9 +342,9 @@ document.addEventListener('DOMContentLoaded', () => {
             history.unshift(historyItem);
         }
 
-        // Limit history to 50 items
-        if (history.length > 50) {
-            history = history.slice(0, 50);
+        // Limit history to 1000 items
+        if (history.length > 1000) {
+            history = history.slice(0, 1000);
         }
 
         localStorage.setItem('bill_history', JSON.stringify(history));
@@ -281,7 +371,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error parsing bill history', e);
         }
 
-        // Apply 5-day expiration filter
+        // Apply 1-year expiration filter
         const originalLength = history.length;
         history = cleanOldHistory(history);
         if (history.length !== originalLength) {
@@ -369,6 +459,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 updatePreview(fieldId, input.value);
             }
         });
+        syncVehicleSelect();
+        syncClientSelect();
 
         // Recalculate totals
         calculateTotals();
