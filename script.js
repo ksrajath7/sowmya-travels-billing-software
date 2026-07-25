@@ -46,7 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (vehicleSelect.value) {
                 vehicleTypeInput.value = vehicleSelect.value;
                 updatePreview('vehicleType', vehicleSelect.value);
+            } else {
+                vehicleTypeInput.value = '';
+                updatePreview('vehicleType', '');
             }
+        });
+
+        vehicleTypeInput.addEventListener('input', () => {
+            syncVehicleSelect();
         });
     }
 
@@ -107,6 +114,11 @@ PH:04842422615/675.`,
                 customerGSTInput.value = preset.gst;
                 updatePreview('customerName', preset.nameAddress);
                 updatePreview('customerGST', preset.gst);
+            } else {
+                customerNameInput.value = '';
+                customerGSTInput.value = '';
+                updatePreview('customerName', '');
+                updatePreview('customerGST', '');
             }
         });
 
